@@ -51,8 +51,10 @@ app.get('/', (req, res) => {
   });
 });
 
-// API Routes
+// API Routes (flexible mounting for local server & Vercel serverless)
 app.use('/api/v1', routes);
+app.use('/v1', routes);
+app.use('/api', routes);
 
 // Handle Unknown Routes
 app.use((req, res, next) => {
