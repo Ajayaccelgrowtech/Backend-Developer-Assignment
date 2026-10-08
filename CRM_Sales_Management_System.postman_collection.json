@@ -1,0 +1,681 @@
+{
+	"info": {
+		"_postman_id": "c1f7a240-8f92-4e89-9a1b-crmsales2026",
+		"name": "CRM Sales Management System API",
+		"description": "Production REST API Collection for CRM Sales Management System featuring JWT Auth, Role-Based Access Control (Admin, Sales Manager, Sales Executive), Lead conversion transactions, Deal business rules, Activities, Timeline audit history, and Analytics pipeline.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "leadId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "customerId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "dealId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "activityId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{authToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "1. Authentication",
+			"item": [
+				{
+					"name": "Login (Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.success && jsonData.data.tokens) {",
+									"    pm.collectionVariables.set('authToken', jsonData.data.tokens.accessToken);",
+									"    pm.collectionVariables.set('refreshToken', jsonData.data.tokens.refreshToken);",
+									"    console.log('authToken saved successfully');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "noauth" },
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@crm.com\",\n  \"password\": \"AdminPassword123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Login (Sales Manager)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.success && jsonData.data.tokens) {",
+									"    pm.collectionVariables.set('authToken', jsonData.data.tokens.accessToken);",
+									"    pm.collectionVariables.set('refreshToken', jsonData.data.tokens.refreshToken);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "noauth" },
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"manager@crm.com\",\n  \"password\": \"ManagerPassword123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Login (Sales Executive)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.success && jsonData.data.tokens) {",
+									"    pm.collectionVariables.set('authToken', jsonData.data.tokens.accessToken);",
+									"    pm.collectionVariables.set('refreshToken', jsonData.data.tokens.refreshToken);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": { "type": "noauth" },
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"alex.exec@crm.com\",\n  \"password\": \"ExecPassword123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Register User",
+					"request": {
+						"auth": { "type": "noauth" },
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"jane.doe@crm.com\",\n  \"phone\": \"+1-555-9988\",\n  \"password\": \"SecretPass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/auth/profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "profile"]
+						}
+					}
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"auth": { "type": "noauth" },
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/refresh-token",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "refresh-token"]
+						}
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"url": {
+							"raw": "{{baseUrl}}/auth/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "logout"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. User Management (Admin Only)",
+			"item": [
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.success && jsonData.data._id) {",
+									"    pm.collectionVariables.set('userId', jsonData.data._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"David Miller\",\n  \"email\": \"david.miller@crm.com\",\n  \"phone\": \"+1-555-7766\",\n  \"password\": \"ExecPass123!\",\n  \"role\": \"Sales Executive\",\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": ["{{baseUrl}}"],
+							"path": ["users"]
+						}
+					}
+				},
+				{
+					"name": "Get All Users (Filtered)",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/users?role=Sales Executive&status=active&page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["users"],
+							"query": [
+								{ "key": "role", "value": "Sales Executive" },
+								{ "key": "status", "value": "active" },
+								{ "key": "page", "value": "1" },
+								{ "key": "limit", "value": "10" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Get User By ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "{{userId}}"]
+						}
+					}
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"David Miller Sr.\",\n  \"phone\": \"+1-555-0011\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "{{userId}}"]
+						}
+					}
+				},
+				{
+					"name": "Deactivate User",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"isActive\": false\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/{{userId}}/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "{{userId}}", "status"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Lead Management",
+			"item": [
+				{
+					"name": "Create Lead",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.success && jsonData.data._id) {",
+									"    pm.collectionVariables.set('leadId', jsonData.data._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Apex Financials\",\n  \"email\": \"leads@apexfinancials.com\",\n  \"phone\": \"+1-800-555-1122\",\n  \"company\": \"Apex Financial Group\",\n  \"source\": \"Website\",\n  \"status\": \"Qualified\",\n  \"priority\": \"High\",\n  \"description\": \"Looking for enterprise CRM solution for 150 seats\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/leads",
+							"host": ["{{baseUrl}}"],
+							"path": ["leads"]
+						}
+					}
+				},
+				{
+					"name": "Get Leads (Multi-filtered & Paginated)",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/leads?status=Qualified&priority=High&source=Website&page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["leads"],
+							"query": [
+								{ "key": "status", "value": "Qualified" },
+								{ "key": "priority", "value": "High" },
+								{ "key": "source", "value": "Website" },
+								{ "key": "page", "value": "1" },
+								{ "key": "limit", "value": "10" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Lead By ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/leads/{{leadId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["leads", "{{leadId}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Lead Status",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"Qualified\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/leads/{{leadId}}/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["leads", "{{leadId}}", "status"]
+						}
+					}
+				},
+				{
+					"name": "Convert Lead (Transaction)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.success && jsonData.data) {",
+									"    if (jsonData.data.customer) pm.collectionVariables.set('customerId', jsonData.data.customer._id);",
+									"    if (jsonData.data.deal) pm.collectionVariables.set('dealId', jsonData.data.deal._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"dealName\": \"Apex Enterprise SaaS Package\",\n  \"dealValue\": 75000,\n  \"probability\": 60,\n  \"expectedClosingDate\": \"2026-11-30\",\n  \"dealStage\": \"Qualification\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/leads/{{leadId}}/convert",
+							"host": ["{{baseUrl}}"],
+							"path": ["leads", "{{leadId}}", "convert"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Customer Management",
+			"item": [
+				{
+					"name": "Get Customers",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/customers?page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "limit", "value": "10" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Customer By ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/customers/{{customerId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers", "{{customerId}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Customer",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"500 Financial Way, Suite 400, NY\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/customers/{{customerId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["customers", "{{customerId}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Deal Management",
+			"item": [
+				{
+					"name": "Get Deals",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/deals?page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["deals"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "limit", "value": "10" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Deal By ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/deals/{{dealId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["deals", "{{dealId}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Deal Stage (Won)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"stage\": \"Won\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/deals/{{dealId}}/stage",
+							"host": ["{{baseUrl}}"],
+							"path": ["deals", "{{dealId}}", "stage"]
+						}
+					}
+				},
+				{
+					"name": "Update Deal Stage (Lost with Reason)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"stage\": \"Lost\",\n  \"lossReason\": \"Competitor offered lower pricing\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/deals/{{dealId}}/stage",
+							"host": ["{{baseUrl}}"],
+							"path": ["deals", "{{dealId}}", "stage"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "6. Sales Activities & Follow-ups",
+			"item": [
+				{
+					"name": "Create Activity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.success && jsonData.data._id) {",
+									"    pm.collectionVariables.set('activityId', jsonData.data._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"type\": \"Meeting\",\n  \"title\": \"Initial Product Walkthrough\",\n  \"description\": \"Demonstrate dashboard and analytics pipeline\",\n  \"dueDate\": \"2026-12-01T15:00:00.000Z\",\n  \"relatedModel\": \"Lead\",\n  \"relatedId\": \"{{leadId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/activities",
+							"host": ["{{baseUrl}}"],
+							"path": ["activities"]
+						}
+					}
+				},
+				{
+					"name": "Get Activities",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/activities?page=1&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["activities"],
+							"query": [
+								{ "key": "page", "value": "1" },
+								{ "key": "limit", "value": "10" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Mark Activity Complete",
+					"request": {
+						"method": "PATCH",
+						"url": {
+							"raw": "{{baseUrl}}/activities/{{activityId}}/complete",
+							"host": ["{{baseUrl}}"],
+							"path": ["activities", "{{activityId}}", "complete"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "7. Audit History Timeline",
+			"item": [
+				{
+					"name": "Get Entity Audit History Timeline",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/timeline/Lead/{{leadId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["timeline", "Lead", "{{leadId}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "8. Dashboard & Analytics",
+			"item": [
+				{
+					"name": "Overview Sales Metrics",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/analytics/overview",
+							"host": ["{{baseUrl}}"],
+							"path": ["analytics", "overview"]
+						}
+					}
+				},
+				{
+					"name": "Sales Pipeline Stage Breakdown",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/analytics/pipeline",
+							"host": ["{{baseUrl}}"],
+							"path": ["analytics", "pipeline"]
+						}
+					}
+				},
+				{
+					"name": "Team Performance Metrics (Admin/Manager)",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/analytics/team-performance",
+							"host": ["{{baseUrl}}"],
+							"path": ["analytics", "team-performance"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
