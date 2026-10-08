@@ -38,6 +38,12 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['Auth', 'Analytics']
     }),
+    seedDatabase: builder.mutation<ApiResponseWrapper<any>, void>({
+      query: () => ({
+        url: '/auth/seed',
+        method: 'GET'
+      })
+    }),
     getProfile: builder.query<ApiResponseWrapper<User>, void>({
       query: () => '/auth/profile',
       providesTags: ['Auth']
@@ -199,6 +205,7 @@ export const apiSlice = createApi({
 
 export const {
   useLoginMutation,
+  useSeedDatabaseMutation,
   useGetProfileQuery,
   useGetOverviewMetricsQuery,
   useGetPipelineMetricsQuery,
