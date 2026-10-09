@@ -14,6 +14,15 @@ export const LoginPage: React.FC = () => {
   const [seedDatabase, { isLoading: isSeeding }] = useSeedDatabaseMutation();
   const dispatch = useDispatch();
 
+  const extractErrorMessage = (err: any): string => {
+    if (!err) return '';
+    if (typeof err.data === 'string') return err.data;
+    if (err.data?.message) return err.data.message;
+    if (err.message) return err.message;
+    if (err.status) return `Server Error (HTTP Status ${err.status})`;
+    return '';
+  };
+
   const handleLogin = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setErrorMsg('');
@@ -31,7 +40,9 @@ export const LoginPage: React.FC = () => {
         );
       }
     } catch (err: any) {
-      // Auto-seed attempt if cloud database is fresh/empty
+      const primaryErr = extractErrorMessage(err);
+
+      // If database is reachable but empty, attempt auto-seed
       try {
         await seedDatabase().unwrap();
         const retryRes = await login({ email, password }).unwrap();
@@ -46,9 +57,13 @@ export const LoginPage: React.FC = () => {
           return;
         }
       } catch (seedErr: any) {
-        // Fallback error message
+        const seedErrMessage = extractErrorMessage(seedErr);
+        setErrorMsg(
+          primaryErr || seedErrMessage || 'Login failed. Please verify cloud database connection and credentials.'
+        );
+        return;
       }
-      setErrorMsg(err.data?.message || 'Login failed. Please verify credentials or seed cloud database.');
+      setErrorMsg(primaryErr || 'Login failed. Please verify cloud database connection and credentials.');
     }
   };
 
@@ -59,7 +74,7 @@ export const LoginPage: React.FC = () => {
       const res = await seedDatabase().unwrap();
       setSeedMsg(res.message || 'Database seeded successfully! You can now log in.');
     } catch (err: any) {
-      setErrorMsg(err.data?.message || 'Failed to seed database.');
+      setErrorMsg(extractErrorMessage(err) || 'Failed to seed database.');
     }
   };
 

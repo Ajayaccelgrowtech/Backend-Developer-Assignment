@@ -4,13 +4,14 @@ const env = require('./environment');
 let isConnected = false;
 
 const connectDB = async () => {
-  if (mongoose.connection.readyState >= 1 || isConnected) {
+  if (mongoose.connection.readyState >= 1) {
     return mongoose.connection;
   }
 
   try {
     const conn = await mongoose.connect(env.mongodbUri, {
-      autoIndex: true
+      autoIndex: true,
+      serverSelectionTimeoutMS: 8000 // 8s timeout for serverless environments
     });
     isConnected = true;
     console.log(`[Database] MongoDB Connected: ${conn.connection.host}`);
@@ -25,3 +26,4 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;
+

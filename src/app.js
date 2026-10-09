@@ -10,6 +10,9 @@ const ApiError = require('./utils/apiError');
 
 const app = express();
 
+// Trust reverse proxy (Vercel)
+app.set('trust proxy', 1);
+
 // Security Headers & CORS
 app.use(helmet());
 app.use(
